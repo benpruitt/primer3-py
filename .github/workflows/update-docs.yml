@@ -5,9 +5,7 @@ name: "Push New Tagged Version Docs Build" # Build on a new version tag
 on:
   push:
     branches:
-      - "master"
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
+      - "benpruitt-test-grinner-docs-update-1.0.0-pass-01"
 
 jobs:
   docs:
