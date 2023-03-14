@@ -46,13 +46,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * in primer3_boulder_main.c
  */
 
-void print_format_output(FILE *f,
-                         const int *io_version,
-                         const p3_global_settings *pa,
-                         const seq_args *sa,
-                         const p3retval *,
-                         const char *,
-                         int   explain_flag);
+void print_format_output(
+    FILE* f,
+    const int* io_version,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const p3retval*,
+    const char*,
+    int explain_flag
+);
 
 
 void format_error(FILE *f, const char* seq_name, const char *err);

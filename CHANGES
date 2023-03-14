@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.2.0 ()
+## Version 1.2.0 (March 13, 2023)
 
 - Threadsafe changes made to `thal.c` resulting in new  `thalflex.c` and `thalflex.h` and `thalflexsignatures.h`.
 - `test_threadsafe.py` add and `nogil` instituted for calls to `thal()` and `seqtm()` added `run_design` and `calc_heterodimer` threadsafe tests

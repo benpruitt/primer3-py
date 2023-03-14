@@ -41,18 +41,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static const char *pr_program_name = "Program name is probably primer3_core";
 
-static void   print_all_explain(const p3_global_settings *,
-                                const seq_args *,
-                                const p3retval *,
-                                int   io_version);
+static void print_all_explain(
+    const p3_global_settings*,
+    const seq_args_t*,
+    const p3retval*,
+    int   io_version
+);
 
 /* Print the data for chosen primer pairs to stdout in "boulderio" format. */
 void
-print_boulder(int io_version,
-              const p3_global_settings *pa,
-              const seq_args *sa,
-              const p3retval *retval,
-              int   explain_flag) {
+print_boulder(
+    int io_version,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const p3retval* retval,
+    int   explain_flag
+) {
   /* The pointers to warning tag */
   char *warning;
 
@@ -560,11 +564,12 @@ print_boulder_warning(const char *err)
 }
 
 static void
-print_all_explain(const p3_global_settings *pa,
-                  const seq_args *sa,
-                  const p3retval *retval,
-                  int io_version)
-{
+print_all_explain(
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const p3retval* retval,
+    int io_version
+) {
   if (pa->pick_left_primer == 1
       && !(pa->pick_anyway && sa->left_input))
     printf("PRIMER_LEFT_EXPLAIN=%s\n",

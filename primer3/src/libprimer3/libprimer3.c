@@ -160,21 +160,21 @@ static khash_t(primer_pair_map) **pairs;
 static void  pr_set_default_global_args_1(p3_global_settings *);
 static void  pr_set_default_global_args_2(p3_global_settings *);
 static void _adjust_seq_args(const p3_global_settings *pa,
-                             seq_args *sa,
+                             seq_args_t *sa,
                              pr_append_str *nonfatal_err,
                              pr_append_str *warning);
 
 static void _optimize_ok_regions_list(const p3_global_settings *pa,
-              seq_args *sa);
+              seq_args_t *sa);
 
 static int any_5_prime_ol_extension_has_problem(const primer_rec *);
 
 static int p3_ol_is_uninitialized(const primer_rec *);
 
-static int fake_a_sequence(seq_args *sa, const p3_global_settings *pa);
+static int fake_a_sequence(seq_args_t *sa, const p3_global_settings *pa);
 
 static int    _pr_data_control(const p3_global_settings *,
-                               const seq_args *,
+                               const seq_args_t *,
                                pr_append_str *glob_err,
                                pr_append_str *nonfatal_err,
                                pr_append_str *warning);
@@ -190,13 +190,13 @@ static void   _pr_shift_substr(const char *, int, int, int, char *);
 
 static int    _pr_violates_poly_x(const char *oligo_seq, int max_poly_x);
 
-static int    _check_and_adjust_intervals(seq_args *sa,
+static int    _check_and_adjust_intervals(seq_args_t *sa,
                                           int seq_len,
                                           int first_index,
                                           pr_append_str * nonfatal_err,
                                           pr_append_str *warning);
 
-static int    _check_and_adjust_overlap_pos(seq_args *sa,
+static int    _check_and_adjust_overlap_pos(seq_args_t *sa,
                                             int *list,
                                             int *count,
                                             const char *tag,
@@ -211,7 +211,7 @@ static int    _check_and_adjust_1_interval(const char *,
                                            int,
                                            int first_index,
                                            pr_append_str *err,
-                                           seq_args *,
+                                           seq_args_t *,
                                            pr_append_str
                                            *warning, int);
 
@@ -230,7 +230,7 @@ void destroy_pair_sec_struct(primer_pair *ppair);
 void save_overwrite_sec_struct(char **base, char *inp);
 
 void recalc_secundary_structures(const p3_global_settings *pa,
-                                 const seq_args *sa,
+                                 const seq_args_t *sa,
                                  const dpal_arg_holder *dpal_arg_to_use,
                                  const thal_arg_holder *thal_arg_to_use,
                                  const thal_arg_holder *thal_oligo_arg_to_use,
@@ -239,18 +239,18 @@ void recalc_secundary_structures(const p3_global_settings *pa,
 void recalc_primer_sec_struct(primer_rec *p_rec,
                               const int rev,
                               const p3_global_settings *pa,
-                              const seq_args *sa,
+                              const seq_args_t *sa,
                               const dpal_arg_holder *dpal_arg_to_use,
                               const thal_arg_holder *thal_arg_to_use);
 void recalc_pair_sec_struct(primer_pair *ppair,
                             const p3_global_settings *pa,
-                            const seq_args *sa,
+                            const seq_args_t *sa,
                             const dpal_arg_holder *dpal_arg_to_use,
                             const thal_arg_holder *thal_arg_to_use);
 
 static int    characterize_pair(p3retval *p,
                                 const p3_global_settings *,
-                                const seq_args *,
+                                const seq_args_t *,
                                 int, int, int,
                                 primer_pair *,
                                 const dpal_arg_holder*,
@@ -259,7 +259,7 @@ static int    characterize_pair(p3retval *p,
 
 static void    choose_pair_or_triple(p3retval *,
                                     const p3_global_settings *,
-                                    const seq_args *,
+                                    const seq_args_t *,
                                     const dpal_arg_holder *,
                                     const thal_arg_holder *,
             const thal_arg_holder *,
@@ -267,7 +267,7 @@ static void    choose_pair_or_triple(p3retval *,
 
 static int    sequence_quality_is_ok(const p3_global_settings *, primer_rec *,
                                      oligo_type,
-                                     const seq_args *, int, int,
+                                     const seq_args_t *, int, int,
                                      oligo_stats *global_oligo_stats,
                                      const args_for_one_oligo_or_primer *);
 
@@ -275,13 +275,13 @@ static int    choose_internal_oligo(p3retval *,
                                     const primer_rec *, const primer_rec *,
                                     int *,
                                     int *,
-                                    const seq_args *,
+                                    const seq_args_t *,
                                     const p3_global_settings *,
                                     const dpal_arg_holder *,
                                     const thal_arg_holder *);
 
 void          compute_position_penalty(const p3_global_settings *,
-                                       const seq_args *,
+                                       const seq_args_t *,
                                        primer_rec *, oligo_type);
 
 dpal_arg_holder *create_dpal_arg_holder(void);
@@ -302,40 +302,40 @@ static void   gc_and_n_content(int, int, const char *, primer_rec *);
 
 static int    make_detection_primer_lists(p3retval *,
                                 const p3_global_settings *,
-                                const seq_args *,
+                                const seq_args_t *,
                                 const dpal_arg_holder *,
                                 const thal_arg_holder *);
 
 static int    make_complete_primer_lists(p3retval *retval,
                                 const p3_global_settings *pa,
-                                const seq_args *sa,
+                                const seq_args_t *sa,
                                 const dpal_arg_holder *dpal_arg_to_use,
                                 const thal_arg_holder *thal_arg_to_use,
         const thal_arg_holder *thal_oligo_arg_to_use);
 
 static int    add_primers_to_check(p3retval *retval,
                                 const p3_global_settings *pa,
-                                const seq_args *sa,
+                                const seq_args_t *sa,
                                 const dpal_arg_holder *dpal_arg_to_use,
                                 const thal_arg_holder *thal_arg_to_use,
         const thal_arg_holder *thal_oligo_arg_to_use);
 
 static int    pick_sequencing_primer_list(p3retval *retval,
                                 const p3_global_settings *pa,
-                                const seq_args *sa,
+                                const seq_args_t *sa,
                                 const dpal_arg_holder *dpal_arg_to_use,
                                 const thal_arg_holder *thal_arg_to_use);
 
 static int    make_internal_oligo_list(p3retval *,
                                        const p3_global_settings *,
-                                       const seq_args *,
+                                       const seq_args_t *,
                                        const dpal_arg_holder *,
                                        const thal_arg_holder *);
 
 static int    pick_only_best_primer(const int, const int,
                                     oligo_array *,
                                     const p3_global_settings *,
-                                    const seq_args *,
+                                    const seq_args_t *,
                                     const dpal_arg_holder *,
                                     const thal_arg_holder *,
                                     p3retval *);
@@ -343,14 +343,14 @@ static int    pick_only_best_primer(const int, const int,
 static int    pick_primer_range(const int, const int, int *,
                                 oligo_array *,
                                 const p3_global_settings *,
-                                const seq_args *,
+                                const seq_args_t *,
                                 const dpal_arg_holder *,
                                 const thal_arg_holder *,
                                 p3retval *retval);
 
 static int    add_one_primer(const char *, int *, oligo_array *,
                              const p3_global_settings *,
-                             const seq_args *,
+                             const seq_args_t *,
                              const dpal_arg_holder *,
                              const thal_arg_holder *,
                              p3retval *);
@@ -358,7 +358,7 @@ static int    add_one_primer(const char *, int *, oligo_array *,
 static int   add_one_primer_by_position(int, int, int *,
                                         oligo_array *,
                                         const p3_global_settings *,
-                                        const seq_args *,
+                                        const seq_args_t *,
                                         const dpal_arg_holder *,
                                         const thal_arg_holder *,
                                         p3retval *);
@@ -367,7 +367,7 @@ static int   pick_primers_by_position(const int, const int,
                                       int *,
                                       oligo_array *,
                                       const p3_global_settings *,
-                                      const seq_args *,
+                                      const seq_args_t *,
                                       const dpal_arg_holder *,
                                       const thal_arg_holder *,
                                       p3retval *);
@@ -394,7 +394,7 @@ static void   calc_and_check_oligo_features(const p3_global_settings *pa,
                                        oligo_type,
                                        const dpal_arg_holder*,
                                        const thal_arg_holder*,
-                                       const seq_args *, oligo_stats *,
+                                       const seq_args_t *, oligo_stats *,
                                        p3retval *,
                                        const char *);
 
@@ -402,7 +402,7 @@ static void   pr_append(pr_append_str *, const char *);
 
 static void   pr_append_new_chunk(pr_append_str *x, const char *s);
 
-static int    pair_spans_target(const primer_pair *, const seq_args *);
+static int    pair_spans_target(const primer_pair *, const seq_args_t *);
 static void   pr_append_w_sep(pr_append_str *, const char *, const char *);
 static void*  pr_safe_malloc(size_t x);
 static void*  pr_safe_realloc(void *p, size_t x);
@@ -411,7 +411,7 @@ static int    compare_primer_pair(const void *, const void*);
 
 static int    primer_rec_comp(const void *, const void *);
 static int    print_list_header(FILE *, oligo_type, int, int, int);
-static int    print_oligo(FILE *, const seq_args *, int, const primer_rec *,
+static int    print_oligo(FILE *, const seq_args_t *, int, const primer_rec *,
                           oligo_type, int, int,int);
 static char   *strstr_nocase(char *, char *);
 
@@ -439,14 +439,14 @@ static void   oligo_hairpin(primer_rec *,
                             );
 
 static void   oligo_compute_sequence_and_reverse(primer_rec *,
-                                                 const seq_args *,
+                                                 const seq_args_t *,
                                                  oligo_type,
                                                  int*, int*,
                                                  char*, char*);
 
 static void   oligo_repeat_library_mispriming(primer_rec *,
                                               const p3_global_settings *,
-                                              const seq_args *,
+                                              const seq_args_t *,
                                               oligo_type,
                                               oligo_stats *,
                                               const dpal_arg_holder *,
@@ -454,7 +454,7 @@ static void   oligo_repeat_library_mispriming(primer_rec *,
 
 static void   oligo_template_mispriming(primer_rec *,
                                         const p3_global_settings *,
-                                        const seq_args *,
+                                        const seq_args_t *,
                                         oligo_type,
                                         oligo_stats *,
                                         const dpal_args *,
@@ -480,7 +480,7 @@ static int    primer_must_match(const p3_global_settings *pa,
 static int    compare_nucleotides(const char a, const char b);
 static int    test_must_match_parameters(char *test);
 
-static void set_retval_both_stop_codons(const seq_args *sa, p3retval *retval);
+static void set_retval_both_stop_codons(const seq_args_t *sa, p3retval *retval);
 
 /* Functions to set bitfield parameters for oligos (or primers) */
 static void bf_set_overlaps_target(primer_rec *, int);
@@ -965,9 +965,11 @@ create_p3retval(void)
   //   = (primer_rec *) malloc(sizeof(*state->intl.oligo) * INITIAL_LIST_LEN);
   state->intl.oligo
     = (primer_rec *) malloc(sizeof(primer_rec) * INITIAL_LIST_LEN);
-  if (state->fwd.oligo == NULL
-      || state->rev.oligo == NULL
-      || state->intl.oligo == NULL) {
+  if (
+      (state->fwd.oligo == NULL) ||
+      (state->rev.oligo == NULL) ||
+      (state->intl.oligo == NULL)
+  ) {
     free(state);
     state = NULL;
     return NULL;
@@ -1146,11 +1148,18 @@ destroy_p3retval(p3retval *state)
 
   free_repeat_sim_score(state);
   free(state->fwd.oligo);
+  state->fwd.oligo = NULL;
   free(state->rev.oligo);
+  state->rev.oligo = NULL;
   free(state->intl.oligo);
-  if (state->best_pairs.storage_size != 0 && state->best_pairs.pairs)
+  state->intl.oligo = NULL;
+  if (
+    (state->best_pairs.storage_size != 0) &&
+    (state->best_pairs.pairs)
+  ) {
     free(state->best_pairs.pairs);
-
+    state->best_pairs.pairs = NULL;
+  }
   destroy_pr_append_str_data(&state->glob_err);
   destroy_pr_append_str_data(&state->per_sequence_err);
   destroy_pr_append_str_data(&state->warnings);
@@ -1203,14 +1212,14 @@ p3_get_rv_best_pairs(const p3retval *r) {
 /* BEGIN functions for seq_arg_holder                           */
 /* ============================================================ */
 
-/* Create and initialize a seq_args data structure */
-seq_args *
+/* Create and initialize a seq_args_t data structure */
+seq_args_t *
 create_seq_arg()
 {
-  // seq_args *r = (seq_args *) malloc(sizeof(*r));
-  seq_args *r = (seq_args *) malloc(sizeof(seq_args));
+  // seq_args_t* r = (seq_args_t*) malloc(sizeof(*r));
+  seq_args_t *r = (seq_args_t *) malloc(sizeof(seq_args_t));
   if (r == NULL) return NULL; /* Out of memory */
-  memset(r, 0, sizeof(seq_args));
+  memset(r, 0, sizeof(seq_args_t));
   r->start_codon_pos = PR_DEFAULT_START_CODON_POS;
   r->start_codon_seq[0] = 'A';
   r->start_codon_seq[1] = 'T';
@@ -1239,29 +1248,70 @@ create_seq_arg()
 
 /* Free a seq_arg data structure */
 void
-destroy_seq_args(seq_args *sa)
+destroy_seq_args(seq_args_t* sa)
 {
   if (sa == NULL) return;
-  free(sa->internal_input);
-  free(sa->left_input);
-  free(sa->right_input);
-  free(sa->sequence);
-  free(sa->quality);
-  free(sa->trimmed_seq);
-
-  free(sa->overhang_left);
-  free(sa->overhang_right);
-  free(sa->overhang_right_rv);
-
+  if (sa->internal_input != NULL) {
+    free(sa->internal_input);
+    sa->internal_input = NULL;
+  }
+  if (sa->left_input != NULL) {
+    free(sa->left_input);
+    sa->left_input = NULL;
+  }
+  if (sa->right_input != NULL) {
+    free(sa->right_input);
+    sa->right_input = NULL;
+  }
+  if (sa->sequence != NULL) {
+    free(sa->sequence);
+    sa->sequence = NULL;
+  }
+  if (sa->quality != NULL) {
+    free(sa->quality);
+    sa->quality = NULL;
+  }
+  if (sa->trimmed_seq != NULL) {
+    free(sa->trimmed_seq);
+    sa->trimmed_seq = NULL;
+  }
+  if (sa->overhang_left != NULL) {
+    free(sa->overhang_left);
+    sa->overhang_left = NULL;
+  }
+  if (sa->overhang_right != NULL) {
+    free(sa->overhang_right);
+    sa->overhang_right = NULL;
+  }
+  if (sa->overhang_right_rv != NULL) {
+    free(sa->overhang_right_rv);
+    sa->overhang_right_rv = NULL;
+  }
   /* edited by T. Koressaar for lowercase masking */
-  free(sa->trimmed_orig_seq);
-
-  free(sa->trimmed_masked_seq_r);
-  free(sa->trimmed_masked_seq);
-
-  free(sa->upcased_seq);
-  free(sa->upcased_seq_r);
-  free(sa->sequence_name);
+  if (sa->trimmed_orig_seq != NULL) {
+    free(sa->trimmed_orig_seq);
+    sa->trimmed_orig_seq = NULL;
+  }
+  if (sa->trimmed_masked_seq_r != NULL) {
+    free(sa->trimmed_masked_seq_r);
+    sa->trimmed_masked_seq_r = NULL;
+  }
+  if (sa->trimmed_masked_seq != NULL) {
+    free(sa->trimmed_masked_seq);
+    sa->trimmed_masked_seq = NULL;
+  }
+  if (sa->upcased_seq != NULL) {
+    free(sa->upcased_seq);
+    sa->upcased_seq = NULL;
+  }
+  if (sa->upcased_seq_r != NULL) {
+    free(sa->upcased_seq_r);
+    sa->upcased_seq_r = NULL;
+  }
+  if (sa->sequence_name != NULL) {
+    free(sa->sequence_name);
+    sa->sequence_name = NULL;
+  }
   free(sa);
   sa = NULL;
 }
@@ -1301,6 +1351,7 @@ static void free_pair_memory(int rev_num_elem)
           if (pp != NULL) {
               free(pp);
               kh_value(hmap, it) = NULL;
+              pp = NULL;
           }
         }
       }
@@ -1322,9 +1373,10 @@ void print_masking_parameters(const masker_parameters *mp, FILE* fd);
 /* See libprimer3.h for documentation.                          */
 /* ============================================================ */
 p3retval *
-choose_primers(const p3_global_settings *pa,
-               seq_args *sa)
-{
+choose_primers(
+  const p3_global_settings* pa,
+  seq_args_t* sa
+) {
   /* Create retval and set were to find the results */
   p3retval *retval = create_p3retval();
   if (retval == NULL)  return NULL;
@@ -1520,7 +1572,7 @@ choose_primers(const p3_global_settings *pa,
 static void
 choose_pair_or_triple(p3retval *retval,
                       const p3_global_settings *pa,
-                      const seq_args *sa,
+                      const seq_args_t* sa,
                       const dpal_arg_holder *dpal_arg_to_use,
                       const thal_arg_holder *thal_arg_to_use,
                       const thal_arg_holder *thal_oligo_arg_to_use,
@@ -1616,6 +1668,7 @@ choose_pair_or_triple(p3retval *retval,
               if (pp != NULL) {
                 free(pp);
                 kh_value(hmap, it) = NULL;
+                pp = NULL;
               }
             }
           }
@@ -1666,6 +1719,7 @@ choose_pair_or_triple(p3retval *retval,
               if (pp != NULL) {
                 free(pp);
                 kh_value(hmap, it) = NULL;
+                pp = NULL;
               }
             }
           }
@@ -1699,6 +1753,7 @@ choose_pair_or_triple(p3retval *retval,
                 if (pp != NULL) {
                   free(pp);
                   kh_value(hmap, it) = NULL;
+                  pp = NULL;
                 }
               }
             }
@@ -2062,7 +2117,7 @@ choose_internal_oligo(p3retval *retval,
                       const primer_rec *right,
                       int *nm,
                       int *more_intl_oligos,
-                      const seq_args *sa,
+                      const seq_args_t* sa,
                       const p3_global_settings *pa,
                       const dpal_arg_holder *dpal_arg_to_use,
                       const thal_arg_holder *thal_arg_to_use
@@ -2345,12 +2400,13 @@ add_pair(const primer_pair *pair,
  * sufficient product size.
  */
 static int
-make_detection_primer_lists(p3retval *retval,
-                            const p3_global_settings *pa,
-                            const seq_args *sa,
-                            const dpal_arg_holder *dpal_arg_to_use,
-                            const thal_arg_holder *thal_arg_to_use)
-{
+make_detection_primer_lists(
+    p3retval* retval,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use
+) {
   int left, right;
   int length, start;
   int i,n,/*k,*/ pr_min;
@@ -2496,12 +2552,13 @@ make_detection_primer_lists(p3retval *retval,
  * there are no acceptable internal oligos; otherwise return 0.
  */
 static int
-make_internal_oligo_list(p3retval *retval,
-                         const p3_global_settings *pa,
-                         const seq_args *sa,
-                         const dpal_arg_holder *dpal_arg_to_use,
-                         const thal_arg_holder *thal_arg_to_use)
-{
+make_internal_oligo_list(
+    p3retval *retval,
+    const p3_global_settings *pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder *dpal_arg_to_use,
+    const thal_arg_holder *thal_arg_to_use
+) {
   int ret;
   int left = 0;
 
@@ -2534,13 +2591,14 @@ make_internal_oligo_list(p3retval *retval,
  * sufficient product size.
  */
 static int
-make_complete_primer_lists(p3retval *retval,
-                  const p3_global_settings *pa,
-                  const seq_args *sa,
-                  const dpal_arg_holder *dpal_arg_to_use,
-                  const thal_arg_holder *thal_arg_to_use,
-      const thal_arg_holder *thal_oligo_arg_to_use)
-{
+make_complete_primer_lists(
+    p3retval *retval,
+    const p3_global_settings *pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder *dpal_arg_to_use,
+    const thal_arg_holder *thal_arg_to_use,
+    const thal_arg_holder *thal_oligo_arg_to_use
+) {
   int extreme;
   int length, start;
   int n;
@@ -2591,13 +2649,14 @@ make_complete_primer_lists(p3retval *retval,
  * make_complete_primer_lists.
  */
 static int
-add_primers_to_check(p3retval *retval,
-         const p3_global_settings *pa,
-         const seq_args *sa,
-         const dpal_arg_holder *dpal_arg_to_use,
-         const thal_arg_holder *thal_arg_to_use,
-         const thal_arg_holder *thal_oligo_arg_to_use)
-{
+add_primers_to_check(
+    p3retval *retval,
+    const p3_global_settings *pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder *dpal_arg_to_use,
+    const thal_arg_holder *thal_arg_to_use,
+    const thal_arg_holder *thal_oligo_arg_to_use
+) {
   int extreme = 0; /* Required when calling add_one_primer
           but not used in the current function. */
 
@@ -2628,12 +2687,13 @@ add_primers_to_check(p3retval *retval,
  * sufficient product size.
  */
 static int
-pick_sequencing_primer_list(p3retval *retval,
-                            const p3_global_settings *pa,
-                            const seq_args *sa,
-                            const dpal_arg_holder *dpal_arg_to_use,
-                            const thal_arg_holder *thal_arg_to_use)
-{
+pick_sequencing_primer_list(
+    p3retval* retval,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use
+) {
   int length, start;
   int n, rest_accuracy;
   int primer_nr; /* number of primers we need to pick */
@@ -2794,15 +2854,16 @@ add_oligo_to_oligo_array(oligo_array *oarray, primer_rec orec) {
 /* pick_primer_range picks all primers which have their 3' end in the range
  * from start to start+length and store only the best *oligo  */
 static int
-pick_only_best_primer(const int start,
-                      const int length,
-                      oligo_array *oligo,
-                      const p3_global_settings *pa,
-                      const seq_args *sa,
-                      const dpal_arg_holder *dpal_arg_to_use,
-                      const thal_arg_holder *thal_arg_to_use,
-                      p3retval *retval)
-{
+pick_only_best_primer(
+    const int start,
+    const int length,
+    oligo_array* oligo,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use,
+    p3retval* retval
+) {
   /* Variables for the loop */
   int i, j, primer_size_small, primer_size_large;
   int n, found_primer;
@@ -2933,13 +2994,17 @@ pick_only_best_primer(const int start,
 /* pick_primer_range picks all legal primers in the range from start
    to start+length and stores them in *oligo  */
 static int
-pick_primer_range(const int start, const int length, int *extreme,
-                  oligo_array *oligo, const p3_global_settings *pa,
-                  const seq_args *sa,
-                  const dpal_arg_holder *dpal_arg_to_use,
-                  const thal_arg_holder *thal_arg_to_use,
-                  p3retval *retval)
-{
+pick_primer_range(
+    const int start,
+    const int length,
+    int* extreme,
+    oligo_array* oligo,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder *dpal_arg_to_use,
+    const thal_arg_holder *thal_arg_to_use,
+    p3retval *retval
+) {
   /* Variables for the loop */
   int i, j;
   int primer_size_small, primer_size_large;
@@ -3058,12 +3123,16 @@ pick_primer_range(const int start, const int length, int *extreme,
  * calculates its length and it will add a primer of any length to the
  * list */
 static int
-add_one_primer(const char *primer, int *extreme, oligo_array *oligo,
-               const p3_global_settings *pa,
-               const seq_args *sa,
-               const dpal_arg_holder *dpal_arg_to_use,
-               const thal_arg_holder *thal_arg_to_use,
-               p3retval *retval) {
+add_one_primer(
+    const char* primer,
+    int* extreme,
+    oligo_array* oligo,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use,
+    p3retval* retval
+) {
   /* Variables for the loop */
   int i, j;
   int n;
@@ -3174,12 +3243,17 @@ add_one_primer(const char *primer, int *extreme, oligo_array *oligo,
  * calculates its length and it will add a primer of any length to the
  * list */
 static int
-add_one_primer_by_position(int start, int length, int *extreme, oligo_array *oligo,
-                           const p3_global_settings *pa,
-                           const seq_args *sa,
-                           const dpal_arg_holder *dpal_arg_to_use,
-                           const thal_arg_holder *thal_arg_to_use,
-                           p3retval *retval) {
+add_one_primer_by_position(
+    int start,
+    int length,
+    int* extreme,
+    oligo_array* oligo,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use,
+    p3retval *retval
+) {
   /* Variables for the loop */
   int i;
   int n, found_primer;
@@ -3279,13 +3353,17 @@ add_one_primer_by_position(int start, int length, int *extreme, oligo_array *oli
 }
 
 static int
-pick_primers_by_position(const int start, const int end, int *extreme,
-                         oligo_array *oligo, const p3_global_settings *pa,
-                         const seq_args *sa,
-                         const dpal_arg_holder *dpal_arg_to_use,
-                         const thal_arg_holder *thal_arg_to_use,
-                         p3retval *retval)
-{
+pick_primers_by_position(
+    const int start,
+    const int end,
+    int* extreme,
+    oligo_array *oligo,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use,
+    p3retval *retval
+) {
   int found_primer, length, j, ret, new_start;
   found_primer = 1;
   ret = 1;
@@ -3344,19 +3422,18 @@ pick_primers_by_position(const int start, const int end, int *extreme,
 #define INSIDE_STOP_WT   100.0
 #define OUTSIDE_STOP_WT    0.5
 static void
-calc_and_check_oligo_features(const p3_global_settings *pa,
-                              primer_rec *h,
-                              oligo_type otype,
-                              const dpal_arg_holder *dpal_arg_to_use,
-                              const thal_arg_holder *thal_arg_to_use,
-                              const seq_args *sa,
-                              oligo_stats *stats,
-                              p3retval *retval,
-
-                              /* This is 5'->3' on the template sequence: */
-                              const char *input_oligo_seq
-                              )
-{
+calc_and_check_oligo_features(
+    const p3_global_settings* pa,
+    primer_rec *h,
+    oligo_type otype,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use,
+    const seq_args_t* sa,
+    oligo_stats* stats,
+    p3retval* retval,
+    /* This is 5'->3' on the template sequence: */
+    const char* input_oligo_seq
+) {
   int i, j, k, for_i, gc_count, overhang_len;
   tm_ret tm_calc;  /* structure with Tm and bound (primer fraction) */
   int three_prime_pos; /* position of 3' base of oligo */
@@ -3956,13 +4033,15 @@ calc_and_check_oligo_features(const p3_global_settings *pa,
    range, or else return 0.
 */
 static int
-sequence_quality_is_ok(const p3_global_settings *pa,
-                       primer_rec *h,
-                       oligo_type l,
-                       const seq_args *sa,
-                       int j, int k,
-                       oligo_stats *global_oligo_stats,
-                       const args_for_one_oligo_or_primer *po_args) {
+sequence_quality_is_ok(
+    const p3_global_settings* pa,
+    primer_rec* h,
+    oligo_type l,
+    const seq_args_t* sa,
+    int j, int k,
+    oligo_stats* global_oligo_stats,
+    const args_for_one_oligo_or_primer* po_args
+) {
   int i, min_q, min_q_end, m, q;
   int  retval = 1;
 
@@ -4406,14 +4485,18 @@ compare_primer_pair(const void *x1, const void *x2)
  * parameters for individual primers if they have not been set yet.
  */
 static int
-characterize_pair(p3retval *retval,
-                  const p3_global_settings *pa,
-                  const seq_args *sa,
-                  int m, int n, int int_num,
-                  primer_pair *ppair,
-                  const dpal_arg_holder *dpal_arg_to_use,
-                  const thal_arg_holder *thal_arg_to_use,
-                  int update_stats) {
+characterize_pair(
+    p3retval* retval,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    int m,
+    int n,
+    int int_num,
+    primer_pair* ppair,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use,
+    int update_stats
+) {
   char s1[THAL_MAX_ALIGN+1], s2[THAL_MAX_ALIGN+1],
     s1_rev[THAL_MAX_ALIGN+1], s2_rev[THAL_MAX_ALIGN+1];
   double compl_end, compl_end2;
@@ -4861,11 +4944,12 @@ characterize_pair(p3retval *retval,
 /*
  */
 void
-compute_position_penalty(const p3_global_settings *pa,
-                         const seq_args *sa,
-                         primer_rec *h,
-                         oligo_type o_type)
-{
+compute_position_penalty(
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    primer_rec* h,
+    oligo_type o_type
+) {
   int three_prime_base;
   int inside_flag = 0;
   int target_begin, target_end;
@@ -4916,7 +5000,7 @@ compute_position_penalty(const p3_global_settings *pa,
  * still be in a legal position with respect to each other.
  */
 static int
-pair_spans_target(const primer_pair *pair, const seq_args *sa)
+pair_spans_target(const primer_pair *pair, const seq_args_t* sa)
 {
   int i;
   int last_of_left = pair->left->start + pair->left->length - 1;
@@ -5219,12 +5303,12 @@ save_overwrite_sec_struct(char **base, char *inp) {
 /* Calculate the secondary structures for selected primers */
 void
 recalc_secundary_structures(
-      const p3_global_settings *pa,
-      const seq_args *sa,
-      const dpal_arg_holder *dpal_arg_to_use,
-      const thal_arg_holder *thal_arg_to_use,
-      const thal_arg_holder *thal_oligo_arg_to_use,
-      p3retval *retval
+      const p3_global_settings* pa,
+      const seq_args_t* sa,
+      const dpal_arg_holder* dpal_arg_to_use,
+      const thal_arg_holder* thal_arg_to_use,
+      const thal_arg_holder* thal_oligo_arg_to_use,
+      p3retval* retval
 ) {
   /* Pointers for the primer set just printing */
   int num_print;
@@ -5323,12 +5407,12 @@ recalc_secundary_structures(
 /* This functions overwrite the any/end values to report discrepancies for debugging.*/
 void
 recalc_primer_sec_struct(
-    primer_rec *p_rec,
+    primer_rec* p_rec,
     const int primer_type, /* left 0, right 1, intl 2 */
-    const p3_global_settings *pa,
-    const seq_args *sa,
-    const dpal_arg_holder *dpal_arg_to_use,
-    const thal_arg_holder *thal_arg_to_use
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use
 ) {
   char s1[THAL_MAX_ALIGN+1], s1_rev[THAL_MAX_ALIGN+1];
   int overhang_len;
@@ -5438,11 +5522,11 @@ recalc_primer_sec_struct(
 
 void
 recalc_pair_sec_struct(
-    primer_pair *ppair,
-    const p3_global_settings *pa,
-    const seq_args *sa,
-    const dpal_arg_holder *dpal_arg_to_use,
-    const thal_arg_holder *thal_arg_to_use
+    primer_pair* ppair,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    const dpal_arg_holder* dpal_arg_to_use,
+    const thal_arg_holder* thal_arg_to_use
 ) {
   char s1[THAL_MAX_ALIGN+1], s1_rev[THAL_MAX_ALIGN+1];
   char s2[THAL_MAX_ALIGN+1], s2_rev[THAL_MAX_ALIGN+1];
@@ -5616,9 +5700,10 @@ recalc_pair_sec_struct(
    sequence returned is changed at the
    next call to pr_oligo_sequence. */
 char *
-pr_oligo_overhang_sequence(const seq_args *sa,
-    const primer_rec *oligo)
-{
+pr_oligo_overhang_sequence(
+    const seq_args_t* sa,
+    const primer_rec* oligo
+) {
   static char s[THAL_MAX_ALIGN+1];
   int seq_len, overhang_len;
   PR_ASSERT(NULL != sa);
@@ -5639,9 +5724,10 @@ pr_oligo_overhang_sequence(const seq_args *sa,
 
 
 char *
-pr_oligo_sequence(const seq_args *sa,
-    const primer_rec *oligo)
-{
+pr_oligo_sequence(
+    const seq_args_t* sa,
+    const primer_rec* oligo
+) {
   static char s[THAL_MAX_ALIGN+1];
   int seq_len;
   PR_ASSERT(NULL != sa);
@@ -5655,8 +5741,8 @@ pr_oligo_sequence(const seq_args *sa,
 
 char *
 pr_oligo_rev_c_overhang_sequence(
-    const seq_args *sa,
-    const primer_rec *o
+    const seq_args_t* sa,
+    const primer_rec* o
 ) {
   static char s[THAL_MAX_ALIGN+1], s1[THAL_MAX_ALIGN+1];
   int seq_len, start, overhang_len;
@@ -5679,9 +5765,10 @@ pr_oligo_rev_c_overhang_sequence(
 }
 
 char *
-pr_oligo_rev_c_sequence(const seq_args *sa,
-    const primer_rec *o)
-{
+pr_oligo_rev_c_sequence(
+    const seq_args_t* sa,
+    const primer_rec* o
+) {
   static char s[THAL_MAX_ALIGN+1], s1[THAL_MAX_ALIGN+1];
   int seq_len, start;
   PR_ASSERT(NULL != sa);
@@ -5769,20 +5856,20 @@ oligo_hairpin(primer_rec *h,
 }
 
 static void
-primer_mispriming_to_template(primer_rec *h,
-                              const p3_global_settings *pa,
-                              const seq_args *sa,
-                              oligo_type l,
-                              oligo_stats *ostats,
-                              int first,
-                              int last,
-                              /* The oligo sequence: */
-                              const char *s,
-                              /* s reverse complemented: */
-                              const char *s_r,
-                              const dpal_args *align_args
-                              )
-{
+primer_mispriming_to_template(
+    primer_rec* h,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    oligo_type l,
+    oligo_stats* ostats,
+    int first,
+    int last,
+    /* The oligo sequence: */
+    const char* s,
+    /* s reverse complemented: */
+    const char* s_r,
+    const dpal_args* align_args
+) {
   const char *oseq;
   char *target, *target_r;
   int tmp, seqlen;
@@ -5876,19 +5963,20 @@ primer_mispriming_to_template(primer_rec *h,
 }
 
 static void
-primer_mispriming_to_template_thermod(primer_rec *h,
-                                      const p3_global_settings *pa,
-                                      const seq_args *sa,
-                                      oligo_type l,
-                                      oligo_stats *ostats,
-                                      int first,
-                                      int last,
-                                      /* The oligo sequence: */
-                                      const char *s,
-                                      /* s reverse complemented: */
-                                      const char *s_r,
-                                      const thal_args *align_args)
-{
+primer_mispriming_to_template_thermod(
+    primer_rec* h,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    oligo_type l,
+    oligo_stats* ostats,
+    int first,
+    int last,
+    /* The oligo sequence: */
+    const char* s,
+    /* s reverse complemented: */
+    const char* s_r,
+    const thal_args* align_args
+) {
   const char *oseq;
   char *target, *target_r;
   int tmp, seqlen;
@@ -5984,12 +6072,15 @@ primer_mispriming_to_template_thermod(primer_rec *h,
 }
 
 static void
-oligo_compute_sequence_and_reverse(primer_rec *h,
-                                   const seq_args *sa,
-                                   oligo_type l,
-                                   int *first, int *last,
-                                   char *s, char *s_r)
-{
+oligo_compute_sequence_and_reverse(
+    primer_rec* h,
+    const seq_args_t* sa,
+    oligo_type l,
+    int* first,
+    int* last,
+    char* s,
+    char* s_r
+) {
   *first =  (OT_LEFT == l || OT_INTL == l)
     ? h->start
     : h->start - h->length + 1;
@@ -6004,13 +6095,13 @@ oligo_compute_sequence_and_reverse(primer_rec *h,
 /* Possible improvement -- pass in the oligo sequences */
 static void
 oligo_repeat_library_mispriming(
-    primer_rec *h,
-    const p3_global_settings *pa,
-    const seq_args *sa,
+    primer_rec* h,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
     oligo_type l,
-    oligo_stats *ostats,
-    const dpal_arg_holder *dpal_arg_to_use,
-    pr_append_str *error
+    oligo_stats* ostats,
+    const dpal_arg_holder* dpal_arg_to_use,
+    pr_append_str* error
 ) {
   char s[MAX_PRIMER_LENGTH+1];     /* Will contain the oligo sequence. */
   char s_r[MAX_PRIMER_LENGTH+1];   /* Will contain s reverse complemented. */
@@ -6102,14 +6193,15 @@ oligo_repeat_library_mispriming(
    thermodynamic alignment, depending on the value of
    pa->thermodynamic_template_alignment. */
 static void
-oligo_template_mispriming(primer_rec *h,
-                          const p3_global_settings *pa,
-                          const seq_args *sa,
-                          oligo_type l,
-                          oligo_stats *ostats,
-                          const dpal_args *d_align_args,
-                          const thal_args *t_align_args)
-{
+oligo_template_mispriming(
+    primer_rec* h,
+    const p3_global_settings* pa,
+    const seq_args_t* sa,
+    oligo_type l,
+    oligo_stats* ostats,
+    const dpal_args* d_align_args,
+    const thal_args* t_align_args
+) {
   char s[MAX_PRIMER_LENGTH+1];     /* Will contain the oligo sequence. */
   char s_r[MAX_PRIMER_LENGTH+1];   /* Will contain s reverse complemented. */
 
@@ -6163,7 +6255,10 @@ pair_repeat_sim(primer_pair *h,
 }
 
 static void
-set_retval_both_stop_codons(const seq_args *sa, p3retval *retval) {
+set_retval_both_stop_codons(
+    const seq_args_t* sa,
+    p3retval* retval
+) {
   /* The position of the intial base of the rightmost stop codon that
    * is to the left of sa->start_codon_pos; valid only if
    * sa->start_codon_pos is "not null".  We will not want to include
@@ -6939,11 +7034,12 @@ pr_safe_realloc(void *p, size_t x)
 
 /* Fuction to set the included region and fix the start positions */
 static void
-_adjust_seq_args(const p3_global_settings *pa,
-                 seq_args *sa,
-                 pr_append_str *nonfatal_err,
-                 pr_append_str *warning)
-{
+_adjust_seq_args(
+    const p3_global_settings* pa,
+    seq_args_t* sa,
+    pr_append_str* nonfatal_err,
+    pr_append_str* warning
+) {
   int seq_len, inc_len, overhang_len;
 
   /* Subtract the overhang from PRIMER_PRODUCT_SIZE_RANGE */
@@ -7132,9 +7228,10 @@ _adjust_seq_args(const p3_global_settings *pa,
  * some imputs this improves speed dramatically.
  */
 static void
-_optimize_ok_regions_list(const p3_global_settings *pa,
-        seq_args *sa)
-{
+_optimize_ok_regions_list(
+    const p3_global_settings* pa,
+    seq_args_t* sa
+) {
   int pmin = INT_MAX;
   int pmax = 0;
   int omin = pa->p_args.min_size;
@@ -7222,8 +7319,10 @@ _optimize_ok_regions_list(const p3_global_settings *pa,
  */
 
 static int
-fake_a_sequence(seq_args *sa, const p3_global_settings *pa)
-{
+fake_a_sequence(
+    seq_args_t* sa,
+    const p3_global_settings *pa
+) {
   int i, product_size, space, ns_to_fill;
   char *rev = NULL;
   int ns_to_fill_first, ns_to_fill_second;
@@ -7293,12 +7392,13 @@ fake_a_sequence(seq_args *sa, const p3_global_settings *pa)
  */
 /* Check if the input in sa and pa makes sense */
 int
-_pr_data_control(const p3_global_settings *pa,
-                 const seq_args *sa,
-                 pr_append_str *glob_err,
-                 pr_append_str *nonfatal_err,
-                 pr_append_str *warning)
-{
+_pr_data_control(
+  const p3_global_settings* pa,
+  const seq_args_t* sa,
+  pr_append_str *glob_err,
+  pr_append_str *nonfatal_err,
+  pr_append_str *warning
+) {
   static char s1[MAX_PRIMER_LENGTH+1];
   int i, pr_min, seq_len, overhang_left_len, overhang_right_len;
   char offending_char = '\0';
@@ -8081,14 +8181,16 @@ _pr_data_control(const p3_global_settings *pa,
 } /* _pr_data_control */
 
 static int
-_check_and_adjust_overlap_pos(seq_args *sa,
-                              int *list,
-                              int *count,
-                              const char *tag,
-                              int seq_len,
-                              int first_index,
-                              pr_append_str *nonfatal_err,
-                              pr_append_str *warning) {
+_check_and_adjust_overlap_pos(
+    seq_args_t* sa,
+    int* list,
+    int* count,
+    const char* tag,
+    int seq_len,
+    int first_index,
+    pr_append_str* nonfatal_err,
+    pr_append_str* warning
+) {
   int i;
   int outside_warning_issued = 0;
   char buffer[255];
@@ -8204,11 +8306,13 @@ _pr_violates_poly_x(const char *seq, int max_poly_x) {
 
 
 static int
-_check_and_adjust_intervals(seq_args *sa,
-                            int seq_len,
-                            int first_index,
-                            pr_append_str * nonfatal_err,
-                            pr_append_str *warning) {
+_check_and_adjust_intervals(
+    seq_args_t* sa,
+    int seq_len,
+    int first_index,
+    pr_append_str* nonfatal_err,
+    pr_append_str* warning
+) {
 
   if (_check_and_adjust_1_interval("TARGET",
                                    sa->tar2.count,
@@ -8264,16 +8368,17 @@ _check_and_adjust_intervals(seq_args *sa,
  * be relative to the start of the included region.
  */
 static int
-_check_and_adjust_1_interval(const char *tag_name,
-                             int num_intervals,
-                             interval_array_t intervals,
-                             int seq_len,
-                             int first_index,
-                             pr_append_str *err,
-                             seq_args *sa,
-                             pr_append_str *warning,
-                             int empty_allowed)
-{
+_check_and_adjust_1_interval(
+    const char* tag_name,
+    int num_intervals,
+    interval_array_t intervals,
+    int seq_len,
+    int first_index,
+    pr_append_str* err,
+    seq_args_t* sa,
+    pr_append_str* warning,
+    int empty_allowed
+) {
   int i;
   int outside_warning_issued = 0;
 
@@ -8343,12 +8448,13 @@ _check_and_adjust_1_interval(const char *tag_name,
    implement P3_FILE_FLAG=1.
  */
 int
-p3_print_oligo_lists(const p3retval *retval,
-                     const seq_args *sa,
-                     const p3_global_settings *pa,
-                     pr_append_str *err,
-                     const char *file_name)
-{
+p3_print_oligo_lists(
+    const p3retval* retval,
+    const seq_args_t* sa,
+    const p3_global_settings* pa,
+    pr_append_str* err,
+    const char* file_name
+) {
   /* Figure out if the sequence starts at position 1 or 0 */
   int   first_base_index = pa->first_base_index;
   int   ret;
@@ -8377,6 +8483,7 @@ p3_print_oligo_lists(const p3retval *retval,
       if (pr_append_external(err, file)) { return 1; }
       if (pr_append_external(err, " for writing")) { return 1; }
       free(file);
+      file = NULL;
       return 1;
     }
 
@@ -8399,6 +8506,7 @@ p3_print_oligo_lists(const p3retval *retval,
       pr_append(err, file);
       pr_append(err, " for writing");
       free(file);
+      file = NULL;
       return 1;
     }
     /* Print the content to the file */
@@ -8423,6 +8531,7 @@ p3_print_oligo_lists(const p3retval *retval,
       if (pr_append_external(err, file)) { return 1; }
       if (pr_append_external(err, " for writing")) { return 1; }
       free(file);
+      file = NULL;
       return 1;
     }
     /* Print the content to the file */
@@ -8435,21 +8544,23 @@ p3_print_oligo_lists(const p3retval *retval,
     if (ret) { return 1; }
   }
   free(file);
+  file = NULL;
   return 0;
 }
 
 /* Print out the content of one primer array */
 /* Return 1 on error, otherwise 0. */
 int
-p3_print_one_oligo_list(const seq_args *sa,
-                        int n,
-                        const primer_rec *oligo_arr,
-                        const oligo_type o_type,
-                        const int first_base_index,
-                        const int print_lib_sim,
-                        FILE  *fh,
-                        const int thermodynamic_oligo_alignment)
-{
+p3_print_one_oligo_list(
+    const seq_args_t* sa,
+    int n,
+    const primer_rec* oligo_arr,
+    const oligo_type o_type,
+    const int first_base_index,
+    const int print_lib_sim,
+    FILE* fh,
+    const int thermodynamic_oligo_alignment
+) {
   int i;
 
   /* Print out the header for the table */
@@ -8519,15 +8630,16 @@ print_list_header(FILE *fh,
 }
 
 static int
-print_oligo(FILE *fh,
-            const seq_args *sa,
-            int index,
-            const primer_rec *h,
-            oligo_type type,
-            int first_base_index,
-            int print_lib_sim,
-            int thermodynamical_approach)
-{
+print_oligo(
+    FILE* fh,
+    const seq_args_t* sa,
+    int index,
+    const primer_rec* h,
+    oligo_type type,
+    int first_base_index,
+    int print_lib_sim,
+    int thermodynamical_approach
+) {
   int ret;
 
   /* WARNING, *p points to static storage that is overwritten on next
@@ -8648,102 +8760,102 @@ p3_read_line(FILE *file)
 /* ============================================================ */
 
 /* ============================================================ */
-/* BEGIN 'get' functions for seq_args                           */
+/* BEGIN 'get' functions for seq_args_t                         */
 /* ============================================================ */
 
 const interval_array_t2 *
-p3_get_sa_tar2(const seq_args *sargs) {
+p3_get_sa_tar2(const seq_args_t* sargs) {
   return &sargs->tar2 ;
 }
 
 const interval_array_t2 *
-p3_get_sa_excl2(const seq_args *sargs) {
+p3_get_sa_excl2(const seq_args_t* sargs) {
   return &sargs->excl2 ;
 }
 
 const interval_array_t2 *
-p3_get_sa_excl_internal2(const seq_args *sargs) {
+p3_get_sa_excl_internal2(const seq_args_t* sargs) {
   return &sargs->excl_internal2 ;
 }
 
 const interval_array_t4 *
-p3_get_sa_ok_regions(const seq_args *sargs)
+p3_get_sa_ok_regions(const seq_args_t* sargs)
 {
   return &sargs->ok_regions;
 }
 
 const int*
-p3_get_sa_overlap_junctions(const seq_args *sargs)
+p3_get_sa_overlap_junctions(const seq_args_t* sargs)
 {
   return sargs->primer_overlap_junctions;
 }
 
 const int*
-p3_get_sa_intl_overlap_junctions(const seq_args *sargs)
+p3_get_sa_intl_overlap_junctions(const seq_args_t* sargs)
 {
   return sargs->intl_overlap_junctions;
 }
 
 /* ============================================================ */
-/* END 'get' functions for seq_args                             */
+/* END 'get' functions for seq_args_t                           */
 /* ============================================================ */
 
 int
-p3_get_sa_n_quality(seq_args *sargs) {
+p3_get_sa_n_quality(seq_args_t* sargs) {
   return sargs->n_quality ;
 }
 
 /* ============================================================ */
-/* BEGIN 'set' functions for seq_args                           */
+/* BEGIN 'set' functions for seq_args_t                         */
 /* ============================================================ */
 
 int
-p3_set_sa_sequence(seq_args *sargs, const char *sequence) {
+p3_set_sa_sequence(seq_args_t* sargs, const char* sequence) {
   return _set_string(&sargs->sequence, sequence) ;
 }
 
 void
-p3_set_sa_primer_sequence_quality(seq_args *sargs, int quality) {
+p3_set_sa_primer_sequence_quality(seq_args_t* sargs, int quality) {
   sargs->quality[sargs->n_quality++] = quality ;
 }
 
 int
-p3_set_sa_sequence_name(seq_args *sargs, const char* sequence_name) {
+p3_set_sa_sequence_name(seq_args_t* sargs, const char* sequence_name) {
  return _set_string(&sargs->sequence_name, sequence_name);
 }
 
 int
-p3_set_sa_left_input(seq_args *sargs, const char *s) {
+p3_set_sa_left_input(seq_args_t* sargs, const char *s) {
  return _set_string(&sargs->left_input, s);
 }
 
 int
-p3_set_sa_right_input(seq_args *sargs, const char *s) {
+p3_set_sa_right_input(seq_args_t* sargs, const char *s) {
  return _set_string(&sargs->right_input, s);
 }
 
 int
-p3_set_sa_internal_input(seq_args *sargs, const char *s) {
+p3_set_sa_internal_input(seq_args_t* sargs, const char *s) {
  return _set_string(&sargs->internal_input, s);
 }
 
 void
-p3_set_sa_incl_s(seq_args *sargs, int incl_s) {
+p3_set_sa_incl_s(seq_args_t* sargs, int incl_s) {
   sargs->incl_s = incl_s;
 }
 
 void
-p3_set_sa_incl_l(seq_args *sargs, int incl_l) {
+p3_set_sa_incl_l(seq_args_t* sargs, int incl_l) {
   sargs->incl_l = incl_l;
 }
 
 void
-p3_set_sa_empty_quality(seq_args *sargs) {
+p3_set_sa_empty_quality(seq_args_t* sargs) {
   sargs->n_quality = 0;
 }
 
 void
-p3_sa_add_to_quality_array(seq_args *sargs, int quality) {
+p3_sa_add_to_quality_array(seq_args_t* sargs, int quality) {
   int n = sargs->n_quality;
   if (sargs->quality_storage_size == 0) {
     sargs->quality_storage_size = 3000;
@@ -8770,7 +8882,7 @@ p3_sa_add_to_quality_array(seq_args *sargs, int quality) {
 }
 
 int
-p3_sa_add_to_overlap_junctions_array(seq_args *sargs, int overlap)
+p3_sa_add_to_overlap_junctions_array(seq_args_t* sargs, int overlap)
 {
   int c = sargs->primer_overlap_junctions_count;
   if (c >= PR_MAX_INTERVAL_ARRAY) { return 1; }
@@ -8779,7 +8891,7 @@ p3_sa_add_to_overlap_junctions_array(seq_args *sargs, int overlap)
 }
 
 int
-p3_sa_add_to_intl_overlap_junctions_array(seq_args *sargs, int overlap)
+p3_sa_add_to_intl_overlap_junctions_array(seq_args_t* sargs, int overlap)
 {
   int c = sargs->intl_overlap_junctions_count;
   if (c >= PR_MAX_INTERVAL_ARRAY) return 1;
@@ -8788,33 +8900,33 @@ p3_sa_add_to_intl_overlap_junctions_array(seq_args *sargs, int overlap)
 }
 
 void
-p3_set_sa_start_codon_pos(seq_args *sargs, int start_codon_pos) {
+p3_set_sa_start_codon_pos(seq_args_t* sargs, int start_codon_pos) {
   sargs->start_codon_pos = start_codon_pos;
 }
 
 int
-p3_add_to_sa_tar2(seq_args *sargs, int n1, int n2) {
+p3_add_to_sa_tar2(seq_args_t* sargs, int n1, int n2) {
   return p3_add_to_interval_array(&sargs->tar2, n1, n2);
 }
 
 int
-p3_add_to_sa_excl2(seq_args *sargs, int n1, int n2) {
+p3_add_to_sa_excl2(seq_args_t* sargs, int n1, int n2) {
   return p3_add_to_interval_array(&sargs->excl2, n1, n2);
 }
 
 int
-p3_add_to_sa_excl_internal2(seq_args *sargs, int n1, int n2) {
+p3_add_to_sa_excl_internal2(seq_args_t* sargs, int n1, int n2) {
   return p3_add_to_interval_array(&sargs->excl_internal2, n1, n2);
 }
 
 int
-p3_add_to_sa_ok_regions(seq_args *sargs, int l1, int l2, int r1, int r2)
+p3_add_to_sa_ok_regions(seq_args_t* sargs, int l1, int l2, int r1, int r2)
 {
   return p3_add_to_2_interval_array(&sargs->ok_regions, l1, l2, r1, r2);
 }
 
 /* ============================================================ */
-/* END 'set' functions for seq_args                             */
+/* END 'set' functions for seq_args_t                           */
 /* ============================================================ */
 
 /* ============================================================ */
@@ -10255,12 +10367,12 @@ print_masking_parameters(const masker_parameters *mp, FILE* fd)
 }
 
 void
-p3_print_args(const p3_global_settings *p, seq_args *s) {
+p3_print_args(const p3_global_settings* p, seq_args_t* s) {
     p3_print_args_fd(p, s, stdout);
 }
 
 void
-p3_print_args_fd(const p3_global_settings *p, seq_args *s, FILE* fd)
+p3_print_args_fd(const p3_global_settings* p, seq_args_t* s, FILE* fd)
 {
   int i;
 

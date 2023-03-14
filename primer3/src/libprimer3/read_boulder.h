@@ -60,31 +60,34 @@ extern char *kmer_lists_path; /* path to kmer lists files */
  * fatal_err->data is not NULL then the data is erroneous and should
  * not be processed. Echo the input lines to stdout.
  */
-int read_boulder_record(FILE *file_input,
-                        const int *strict_tags,
-                        const int * io_version,
-                        int echo_output,
-                        const p3_file_type read_file_type,
-                        p3_global_settings *pa,
-                        seq_args *sarg,
-                        pr_append_str *fatal_err,
-                        pr_append_str *nonfatal_err,
-                        pr_append_str *warnings,
-                        read_boulder_record_results *,
-                        char* /* Added NC */
-                        );
+int read_boulder_record(
+    FILE* file_input,
+    const int* strict_tags,
+    const int* io_version,
+    int echo_output,
+    const p3_file_type read_file_type,
+    p3_global_settings* pa,
+    seq_args_t* sarg,
+    pr_append_str* fatal_err,
+    pr_append_str* nonfatal_err,
+    pr_append_str* warnings,
+    read_boulder_record_results*,
+    char* /* Added NC */
+);
 
 /* Return null on error. */
 /* pr_append_str is an append-only string ADT. */
-int read_p3_file(const char *file_name,
-                 const p3_file_type file_type,
-                 int echo_output,
-                 int strict_tags,
-                 p3_global_settings *pa,
-                 seq_args *sarg,
-                 pr_append_str *fatal_err,
-                 pr_append_str *nonfatal_err,
-                 pr_append_str *warnings,
-                 read_boulder_record_results *read_boulder_record_res);
+int read_p3_file(
+    const char* file_name,
+    const p3_file_type file_type,
+    int echo_output,
+    int strict_tags,
+    p3_global_settings* pa,
+    seq_args_t* sarg,
+    pr_append_str* fatal_err,
+    pr_append_str* nonfatal_err,
+    pr_append_str* warnings,
+    read_boulder_record_results* read_boulder_record_res
+);
 
 #endif

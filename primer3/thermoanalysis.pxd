@@ -278,7 +278,7 @@ cdef extern from "libprimer3.h":
     ctypedef struct interval_array_t4:
         pass
 
-    ctypedef struct seq_args:
+    ctypedef struct seq_args_t:
         interval_array_t2 tar2  # The targets.  tar2->pairs[i][0] is the start
                                 #  of the ith target, tar2->pairs[i][1] its length.
 
@@ -379,7 +379,7 @@ cdef extern from "libprimer3.h":
         # Delta G of disription of 5 3' bases
 
         int    start    # Position of the 5'-most base within the primer
-                        # WITH RESPECT TO THE seq_args FIELD
+                        # WITH RESPECT TO THE seq_args_t FIELD
                         # trimmed_seq.
 
         int    seq_quality      # Minimum quality score of bases included.
@@ -517,12 +517,12 @@ cdef extern from "libprimer3.h":
     const char *p3_get_pair_array_explain_string(const pair_array_t*)
     const char *p3_get_oligo_array_explain_string(const oligo_array*)
 
-    int PR_START_CODON_POS_IS_NULL(seq_args* sa)
+    int PR_START_CODON_POS_IS_NULL(seq_args_t* sa)
 
     void p3_destroy_global_settings(p3_global_settings*)
     p3_global_settings* p3_create_global_settings()
-    void p3_print_args(const p3_global_settings *, seq_args *)
-    p3retval* choose_primers(const p3_global_settings *, seq_args *)
+    void p3_print_args(const p3_global_settings*, seq_args_t*)
+    p3retval* choose_primers(const p3_global_settings*, seq_args_t*) nogil
 
     void destroy_secundary_structures(const p3_global_settings *pa, p3retval *retval)
     void destroy_p3retval(p3retval *)
@@ -537,17 +537,17 @@ cdef extern from "libprimer3.h":
     void destroy_pr_append_str(pr_append_str *)
     void destroy_pr_append_str_data(pr_append_str *str)
 
-    seq_args* create_seq_arg()
-    void destroy_seq_args(seq_args*)
+    seq_args_t* create_seq_arg()
+    void destroy_seq_args(seq_args_t*)
 
     int p3_ol_has_any_problem(const primer_rec *oligo)
     const char* p3_get_ol_problem_string(const primer_rec *oligo)
 
-    char  *pr_oligo_sequence(const seq_args*, const primer_rec*)
-    char  *pr_oligo_overhang_sequence(const seq_args*, const primer_rec*)
+    char  *pr_oligo_sequence(const seq_args_t*, const primer_rec*)
+    char  *pr_oligo_overhang_sequence(const seq_args_t*, const primer_rec*)
 
-    char  *pr_oligo_rev_c_sequence(const seq_args*, const primer_rec*)
-    char  *pr_oligo_rev_c_overhang_sequence(const seq_args*, const primer_rec*)
+    char  *pr_oligo_rev_c_sequence(const seq_args_t*, const primer_rec*)
+    char  *pr_oligo_rev_c_overhang_sequence(const seq_args_t*, const primer_rec*)
 
     double oligo_max_template_mispriming(const primer_rec*)
     double oligo_max_template_mispriming_thermod(const primer_rec*)
@@ -572,16 +572,16 @@ cdef extern from "read_boulder.h":
         settings          = 2
 
     int read_boulder_record(
-        FILE *file_input,
-        const int *strict_tags,
-        const int * io_version,
+        FILE* file_input,
+        const int* strict_tags,
+        const int* io_version,
         int echo_output,
         const p3_file_type read_file_type,
-        p3_global_settings *pa,
-        seq_args *sarg,
-        pr_append_str *fatal_err,
-        pr_append_str *nonfatal_err,
-        pr_append_str *warnings,
+        p3_global_settings* pa,
+        seq_args_t* sarg,
+        pr_append_str* fatal_err,
+        pr_append_str* nonfatal_err,
+        pr_append_str* warnings,
         read_boulder_record_results *,
         char*
     )
@@ -596,6 +596,9 @@ cdef class _ThermoAnalysis:
     cdef:
         thal_args thalargs
         int eval_mode
+        p3_global_settings* global_settings_data
+        seq_args_t* sequence_args_data
+
         public int max_nn_length
         public int _tm_method
         public object _tm_methods_int_dict
@@ -665,7 +668,7 @@ cdef class _ThermoAnalysis:
 cdef:
     int pdh_wrap_set_seq_args_globals(
         p3_global_settings* global_settings_data,
-        seq_args* sequence_args_data,
+        seq_args_t* sequence_args_data,
         object kmer_lists_path,
         char* in_buffer,
     ) except -1
@@ -674,6 +677,6 @@ cdef:
 
     object pdh_design_output_to_dict(
         const p3_global_settings* global_settings_data,
-        const seq_args* sequence_args_data,
-        const p3retval *retval,
+        const seq_args_t* sequence_args_data,
+        const p3retval* retval,
     )
