@@ -46,7 +46,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* NOTE: primer3-py.  This library is C only and does not use C++ as the
 * upstream libprimer3.cc does. It uses the `klib/khash.h` library to do this
 * avoiding C++ complexity and keeping the build for the Cython code simple.
-* this only affects lines that use hash maps such as the **pairs global variable
+* this only affects lines that use hash maps such as the **pairs variable in
+* choose_pair_or_triple (previuosly global)
+*
 * C++ code replaced is intentionally commented out as a reference for future
 * code comparisons. in older code this replaced `std::hash_map` from
 * and `#include <ext/hash_map>` as of primer3 2.6.1 now replaces
@@ -150,10 +152,23 @@ static int thermodynamic_alignment_length_error = 0;
 static char *thermodynamic_alignment_length_error_msg = NULL;
 
 /* Variables needed in choose_pair_or_triple, need to be global
-   for memory de-allocation reasons. Full description given in the function. */
-static int *max_j_seen = NULL;
+   for memory de-allocation reasons. Full description given in the function.
+
+   2023.03.21 -- BP moved to function-local (choose_pair_or_triple) for thread
+   safety
+*/
+// int *max_j_seen = NULL;
 // static std::hash_map<int, primer_pair*> **pairs;
-static khash_t(primer_pair_map) **pairs;
+// static khash_t(primer_pair_map) **pairs;
+
+typedef struct pairs_args_t {
+    int *max_j_seen; /* The maximum value of j (loop index for forward primers)
+                        that has been examined for every reverse primer
+                        index (i) */
+    khash_t(primer_pair_map) **pairs; /* hash map for storing found primer
+                                         pairs by pair index, previously
+                                         global */
+} pairs_args_t;
 
 /* Function declarations. */
 
@@ -262,8 +277,9 @@ static void    choose_pair_or_triple(p3retval *,
                                     const seq_args_t *,
                                     const dpal_arg_holder *,
                                     const thal_arg_holder *,
-            const thal_arg_holder *,
-                                    pair_array_t *);
+                                    const thal_arg_holder *,
+                                    pair_array_t *,
+                                    pairs_args_t *pairs_args);
 
 static int    sequence_quality_is_ok(const p3_global_settings *, primer_rec *,
                                      oligo_type,
@@ -1323,7 +1339,7 @@ destroy_seq_args(seq_args_t* sa)
 
 /* Function used to de-allocate the memory used by the hash maps
    allocated in choose_pair_or_triple. */
-static void free_pair_memory(int rev_num_elem)
+static void free_pair_memory(int rev_num_elem, pairs_args_t *pairs_args)
 {
   // std::hash_map<int, primer_pair*> *hmap;
   // std::hash_map<int, primer_pair*>::iterator it;
@@ -1333,12 +1349,12 @@ static void free_pair_memory(int rev_num_elem)
   primer_pair *pp = NULL;
   int i;
 
-  if (max_j_seen != NULL) {
-    free( max_j_seen );
-    max_j_seen = NULL;
+  if (pairs_args->max_j_seen != NULL) {
+    free( pairs_args->max_j_seen );
+    pairs_args->max_j_seen = NULL;
   }
   for (i=0; i < rev_num_elem; i++) {
-    hmap = pairs[i];
+    hmap = pairs_args->pairs[i];
     if (hmap != NULL) {
       // for (it=hmap->begin(); it!=hmap->end(); it++) {
       for (it = kh_begin(hmap); it != kh_end(hmap); ++it) {
@@ -1359,9 +1375,9 @@ static void free_pair_memory(int rev_num_elem)
       kh_destroy(primer_pair_map, hmap);
     }
   }
-  if (pairs != NULL) {
-    free(pairs);
-    pairs = NULL;
+  if (pairs_args->pairs != NULL) {
+    free(pairs_args->pairs);
+    pairs_args->pairs = NULL;
   }
 }
 
@@ -1383,6 +1399,11 @@ choose_primers(
 
   PR_ASSERT(NULL != pa);
   PR_ASSERT(NULL != sa);
+
+  /* 2023.03.21 BP -- moved from global / choose_pair_or_triple to support
+     thread safety improvements
+  */
+  pairs_args_t pairs_args = {NULL, NULL};
 
   /* NOTE: primer3-py added to debugging arguments `pa` and `sa` */
   if (pa->do_log_settings) {
@@ -1432,7 +1453,7 @@ choose_primers(
         thermodynamic_alignment_length_error_msg = NULL;
       }
       /* Other necessary cleanup. */
-      free_pair_memory(retval->rev.num_elem);
+      free_pair_memory(retval->rev.num_elem, &pairs_args);
       return retval;
     }
     /* This was a memory error. */
@@ -1534,7 +1555,7 @@ choose_primers(
   /* Select primer pairs if needed */
   if (retval->output_type == primer_pairs) {
     choose_pair_or_triple(retval, pa, sa, dpal_arg_to_use, thal_arg_to_use,
-       thal_oligo_arg_to_use, &retval->best_pairs);
+       thal_oligo_arg_to_use, &retval->best_pairs, &pairs_args);
   }
 
   /* Calculate secondary structures only for the selected primers */
@@ -1576,20 +1597,19 @@ choose_pair_or_triple(p3retval *retval,
                       const dpal_arg_holder *dpal_arg_to_use,
                       const thal_arg_holder *thal_arg_to_use,
                       const thal_arg_holder *thal_oligo_arg_to_use,
-                      pair_array_t *best_pairs) {
+                      pair_array_t *best_pairs,
+                      pairs_args_t *pairs_args) {
   int i, j;           /* Loop index. */
   int n_int;          /* Index of the internal oligo */
   int more_intl_oligos = 1;
   int valid_intl;
-
-  /*int *max_j_seen; */  /* The maximum value of j (loop index for forward primers)
-                            that has been examined for every reverse primer
-                            index (i) -- global variable now */
   int update_stats = 1;     /* Flag to indicate whether pair_stats
                             should be updated. */
   primer_pair h;             /* The current pair which is being evaluated. */
   primer_pair the_best_pair; /* The best pair is being "remembered". */
   pair_stats *pair_expl = &retval->best_pairs.expl; /* For statistics */
+  int *max_j_seen = NULL;
+  khash_t(primer_pair_map) **pairs = NULL;
 
   int product_size_range_index = 0;
   int trace_me = 0;
@@ -1621,12 +1641,14 @@ choose_pair_or_triple(p3retval *retval,
   //   (std::hash_map<int, primer_pair*>**)
   //   calloc (retval->rev.num_elem,
   //     sizeof(std::hash_map<int, primer_pair*>*));
-  pairs = (khash_t(primer_pair_map) **) calloc (retval->rev.num_elem,
+  pairs_args->pairs = (khash_t(primer_pair_map) **) calloc (retval->rev.num_elem,
                                       sizeof(khash_t(primer_pair_map) *));
+  pairs = pairs_args->pairs;
   if (!pairs)  { longjmp(_jmp_buf, 1); }
 
   memset(&the_best_pair, 0, sizeof(the_best_pair));
-  max_j_seen = (int *) malloc(sizeof(int) * retval->rev.num_elem);
+  pairs_args->max_j_seen = (int *) malloc(sizeof(int) * retval->rev.num_elem);
+  max_j_seen = pairs_args->max_j_seen;
   for (i = 0; i < retval->rev.num_elem; i++) { max_j_seen[i] = -1; }
 
   /* Pick pairs till we have enough. */
@@ -2100,7 +2122,7 @@ choose_pair_or_triple(p3retval *retval,
 
   /* Final cleanup of dynamically allocated storage for this
      function. */
-  free_pair_memory(retval->rev.num_elem);
+  free_pair_memory(retval->rev.num_elem, pairs_args);
 }
 /* ============================================================ */
 /* END choose_pair_or_triple                                    */
