@@ -59,6 +59,7 @@ from libc.string cimport strlen
 
 import atexit
 import os.path as op
+import sys
 import warnings as pywarnings
 from typing import (
     Any,
@@ -1234,12 +1235,11 @@ cdef class _ThermoAnalysis:
         if retval == NULL:
             raise ValueError('Issue choosing primers')
         try:
-            results_dict = {}
-            # results_dict = pdh_design_output_to_dict(
-            #     global_settings_data,
-            #     sequence_args_data,
-            #     retval,
-            # )
+            results_dict = pdh_design_output_to_dict(
+                global_settings_data,
+                sequence_args_data,
+                retval,
+            )
         finally:
             if retval != NULL:
                 destroy_secundary_structures(
